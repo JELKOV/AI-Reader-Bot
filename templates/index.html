@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech</title>
+    <!-- CSS 파일 연결 -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function handleResponse(response) {
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "";
+
+            if (response.error) {
+                alert(response.error);
+            } else {
+                alert(response.message);
+                // 다운로드 링크 생성
+                const downloadLink = document.createElement("a");
+                downloadLink.href = response.download_link;
+                downloadLink.textContent = "다운로드 음성파일";
+                downloadLink.classList.add("download-link");
+                resultDiv.appendChild(downloadLink);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>AI AUDIO MAKING</h1>
+        <h2>Upload a PDF file or Enter Text</h2>
+
+        <!-- PDF 파일 업로드 폼 -->
+        <form action="/" method="post" enctype="multipart/form-data" onsubmit="event.preventDefault(); fetch('/', { method: 'POST', body: new FormData(this) }).then(res => res.json()).then(handleResponse)">
+            <label for="pdf_file">PDF 업로드(한국어/ 영어/ 중국어 / 3000자 제하)</label>
+            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf">
+            <button type="submit">음성 파일로 변환</button>
+        </form>
+
+        <hr>
+
+        <!-- 텍스트 입력 폼 -->
+        <form action="/" method="post" onsubmit="event.preventDefault(); fetch('/', { method: 'POST', body: new FormData(this) }).then(res => res.json()).then(handleResponse)">
+            <label for="text_input">텍스트를 입력하세요 (한국어, 영어, 중국어 / 3000자 제한):</label><br>
+            <textarea id="text_input" name="text_input" rows="10" cols="50" placeholder="영어로 입력할 시 최소 10자 이상 문장으로 입력하세요."></textarea><br>
+            <button type="submit">음성 파일로 변환</button>
+        </form>
+
+        <hr>
+
+        <!-- 다운로드 결과 -->
+        <div id="result" class="result">
+        </div>
+    </div>
+</body>
+</html>
